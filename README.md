@@ -1,6 +1,6 @@
 [![Elixir CI](https://github.com/woylie/ecto-ulid/actions/workflows/elixir.yml/badge.svg)](https://github.com/woylie/ecto-ulid/actions/workflows/elixir.yml) [![Hex](https://img.shields.io/hexpm/v/ecto_ulid_next)](https://hex.pm/packages/ecto_ulid_next)
 
-# Ecto.ULID next
+# Ecto.ULID Next+
 
 An `Ecto.Type` implementation of [ULID](https://github.com/ulid/spec).
 
@@ -11,6 +11,8 @@ ULID is a 128-bit universally unique lexicographically sortable identifier. ULID
 binary-compatible with UUID, so it can be stored in a `uuid` column in a database.
 
 **This is a fork of [TheRealReal/ecto-ulid](https://github.com/TheRealReal/ecto-ulid), which doesn't seem to be maintained anymore. The aim is to ensure compatibility with current and future Ecto versions.**
+
+Also a fork on [ulid-next](https://github.com/woylie/ecto-ulid), which includes prefix handling and builtin ULID downcasing.
 
 ## Features
 
@@ -88,7 +90,7 @@ appropriate for your schema. Here's an example of using both:
 defmodule MyApp.Event do
   use Ecto.Schema
 
-  @primary_key {:id, Ecto.ULID, autogenerate: false}
+  @primary_key {:id, Ecto.ULID, prefix: "evnt" autogenerate: false}
   @foreign_key_type Ecto.ULID
   schema "events" do
     # more columns ...
