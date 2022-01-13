@@ -1,5 +1,3 @@
-[![Elixir CI](https://github.com/woylie/ecto-ulid/actions/workflows/elixir.yml/badge.svg)](https://github.com/woylie/ecto-ulid/actions/workflows/elixir.yml) [![Hex](https://img.shields.io/hexpm/v/ecto_ulid_next)](https://hex.pm/packages/ecto_ulid_next)
-
 # Ecto.ULID Next+
 
 An `Ecto.Type` implementation of [ULID](https://github.com/ulid/spec).
@@ -49,7 +47,7 @@ Install `ecto_ulid_next` from Hex by adding it to the dependencies in `mix.exs`:
 ```elixir
 defp deps do
   [
-    {:ecto_ulid_next, "~> 0.3.0"}
+    {:ecto_ulid_next, "~> 0.3.0", github: "sourdoughdev/ecto-ulid"}
   ]
 end
 ```
