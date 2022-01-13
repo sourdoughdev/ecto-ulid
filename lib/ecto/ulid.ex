@@ -21,7 +21,7 @@ defmodule Ecto.ULID do
   """
   def cast(<<_::bytes-size(26)>> = value) do
     if valid?(value) do
-      {:ok, String.downcase(value)}
+      {:ok, String.downcase(value) }
     else
       :error
     end
@@ -29,12 +29,31 @@ defmodule Ecto.ULID do
 
   def cast(_), do: :error
 
+  def cast(<<_::bytes-size(26)>> = value, params) do
+    prefix = Map.get(params, :prefix)
+
+    if valid?(value) do
+      {:ok, String.downcase(value) |> format_id(prefix) }
+    else
+      :error
+    end
+  end
+
+  def cast(_, _), do: :error
+
   @doc """
   Same as `cast/1` but raises `Ecto.CastError` on invalid arguments.
   """
   def cast!(value) do
     case cast(value) do
-      {:ok, ulid} -> String.downcase(ulid)
+      {:ok, ulid} -> ulid
+      :error -> raise Ecto.CastError, type: __MODULE__, value: value
+    end
+  end
+
+  def cast!(value, params) do
+    case cast(value, params) do
+      {:ok, ulid} -> ulid
       :error -> raise Ecto.CastError, type: __MODULE__, value: value
     end
   end
