@@ -3,7 +3,11 @@ defmodule Ecto.ULID do
   An Ecto type for ULID strings.
   """
 
+  require Logger
+
   use Ecto.Type
+
+  @prefix_separator "_"
 
   @typedoc """
   A hex-encoded ULID string.
@@ -38,20 +42,47 @@ defmodule Ecto.ULID do
     end
   end
 
+  def dump(<<_::bytes-size(26)>> = encoded), do: decode(encoded)
+
   @doc """
   Converts a Crockford Base32 encoded ULID into a binary.
   """
-  def dump(<<_::bytes-size(26)>> = encoded), do: decode(encoded)
-  def dump(_), do: :error
+  def dump(data, params) when is_binary(data) and byte_size(data) >= 26 do
+    prefix = Map.get(params, :prefix)
+    prefix_with_separator = prefix <> @prefix_separator
 
+    data
+    |> String.split_at(String.length(prefix_with_separator))
+    |> case do
+      {^prefix_with_separator, data} -> data |> String.upcase() |> decode()
+      _ -> :error
+    end
+  end
+
+  def dump(_, _), do: :error
+
+  @spec load(<<_::128>>, map) :: {:ok, nonempty_binary}
   @doc """
   Converts a binary ULID into a Crockford Base32 encoded string.
   """
-  def load(<<_::unsigned-size(128)>> = bytes), do: encode(bytes)
+  def load(<<_::unsigned-size(128)>> = bytes, params) do
+    prefix = Map.get(params, :prefix)
+
+    {:ok, ulid} = encode(bytes)
+
+    ulid = ulid
+    |> String.downcase
+    |> format_id(prefix)
+
+    {:ok, ulid}
+  end
+
   def load(_), do: :error
 
   @doc false
-  def autogenerate, do: generate()
+  def autogenerate() do
+    generate()
+  end
 
   @doc """
   Generates a Crockford Base32 encoded ULID.
@@ -66,6 +97,10 @@ defmodule Ecto.ULID do
   def generate(timestamp \\ System.system_time(:millisecond)) do
     {:ok, ulid} = encode(bingenerate(timestamp))
     ulid
+  end
+
+  defp format_id(id, prefix) do
+    "#{prefix}#{@prefix_separator}#{id}"
   end
 
   @doc """
