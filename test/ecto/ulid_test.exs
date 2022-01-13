@@ -91,7 +91,9 @@ defmodule Ecto.ULIDTest do
   end
 
   test "dump/1 dumps valid ULID to binary with a prefix" do
-    {:ok, bytes} = Ecto.ULID.dump("obj_#{String.downcase(@encoded)}", %{ prefix: "obj" })
+    {:ok, bytes} =
+      Ecto.ULID.dump("obj_#{String.downcase(@encoded)}", %{prefix: "obj"})
+
     assert bytes == @binary
   end
 
@@ -136,7 +138,7 @@ defmodule Ecto.ULIDTest do
   end
 
   test "load/1 encodes binary as ULID with a prefix" do
-    {:ok, ulid} = Ecto.ULID.load(@binary, %{ prefix: "obj" })
+    {:ok, ulid} = Ecto.ULID.load(@binary, %{prefix: "obj"})
 
     assert ulid == "obj_#{String.downcase(@encoded)}"
   end

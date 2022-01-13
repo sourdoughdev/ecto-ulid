@@ -42,19 +42,24 @@ defmodule Ecto.ULID do
   @doc """
   Converts a Crockford Base32 encoded ULID into a binary.
   """
-  def dump(encoded) when is_binary(encoded) and byte_size(encoded) >= 26, do: decode(String.upcase(encoded))
+  def dump(encoded) when is_binary(encoded) and byte_size(encoded) >= 26,
+    do: decode(String.upcase(encoded))
 
   def dump(_), do: :error
 
-  def dump(encoded, params) when is_binary(encoded) and byte_size(encoded) >= 26 do
+  def dump(encoded, params)
+      when is_binary(encoded) and byte_size(encoded) >= 26 do
     prefix = Map.get(params, :prefix)
     prefix_with_separator = prefix <> @prefix_separator
 
     encoded
     |> String.split_at(String.length(prefix_with_separator))
     |> case do
-      {^prefix_with_separator, encoded} -> encoded |> String.upcase() |> decode()
-      _ -> :error
+      {^prefix_with_separator, encoded} ->
+        encoded |> String.upcase() |> decode()
+
+      _ ->
+        :error
     end
   end
 
@@ -75,9 +80,10 @@ defmodule Ecto.ULID do
 
     {:ok, ulid} = encode(bytes)
 
-    ulid = ulid
-    |> String.downcase
-    |> format_id(prefix)
+    ulid =
+      ulid
+      |> String.downcase()
+      |> format_id(prefix)
 
     {:ok, ulid}
   end
