@@ -33,7 +33,7 @@ defmodule Ecto.ULID do
     prefix = Map.get(params, :prefix)
 
     if valid?(value) do
-      {:ok, String.downcase(value) |> format_id(prefix)}
+      {:ok, String.downcase(format_id(value, prefix))}
     else
       :error
     end
@@ -110,7 +110,7 @@ defmodule Ecto.ULID do
   def load(_, _), do: :error
 
   @doc false
-  def autogenerate() do
+  def autogenerate do
     generate()
   end
 
