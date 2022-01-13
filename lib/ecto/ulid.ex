@@ -21,7 +21,7 @@ defmodule Ecto.ULID do
   """
   def cast(<<_::bytes-size(26)>> = value) do
     if valid?(value) do
-      {:ok, String.downcase(value) }
+      {:ok, String.downcase(value)}
     else
       :error
     end
@@ -33,7 +33,7 @@ defmodule Ecto.ULID do
     prefix = Map.get(params, :prefix)
 
     if valid?(value) do
-      {:ok, String.downcase(value) |> format_id(prefix) }
+      {:ok, String.downcase(value) |> format_id(prefix)}
     else
       :error
     end
