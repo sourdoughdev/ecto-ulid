@@ -42,7 +42,7 @@ defmodule Ecto.ULIDTest do
 
   test "cast/1 returns valid ULID" do
     {:ok, ulid} = Ecto.ULID.cast(@encoded)
-    assert ulid == @encoded
+    assert ulid == String.downcase(@encoded)
   end
 
   test "cast/1 returns ULID for encoding of correct length" do
@@ -80,8 +80,18 @@ defmodule Ecto.ULIDTest do
 
   # dump/1
 
+  test "dump/1 dumps valid downcase ULID to binary" do
+    {:ok, bytes} = Ecto.ULID.dump(String.downcase(@encoded))
+    assert bytes == @binary
+  end
+
   test "dump/1 dumps valid ULID to binary" do
     {:ok, bytes} = Ecto.ULID.dump(@encoded)
+    assert bytes == @binary
+  end
+
+  test "dump/1 dumps valid ULID to binary with a prefix" do
+    {:ok, bytes} = Ecto.ULID.dump("obj_#{String.downcase(@encoded)}", %{ prefix: "obj" })
     assert bytes == @binary
   end
 
@@ -122,7 +132,13 @@ defmodule Ecto.ULIDTest do
 
   test "load/1 encodes binary as ULID" do
     {:ok, encoded} = Ecto.ULID.load(@binary)
-    assert encoded == @encoded
+    assert encoded == String.downcase(@encoded)
+  end
+
+  test "load/1 encodes binary as ULID with a prefix" do
+    {:ok, ulid} = Ecto.ULID.load(@binary, %{ prefix: "obj" })
+
+    assert ulid == "obj_#{String.downcase(@encoded)}"
   end
 
   test "load/1 encodes binary of correct length" do

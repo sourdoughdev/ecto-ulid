@@ -21,7 +21,7 @@ defmodule Ecto.ULID do
   """
   def cast(<<_::bytes-size(26)>> = value) do
     if valid?(value) do
-      {:ok, value}
+      {:ok, String.downcase(value)}
     else
       :error
     end
@@ -34,7 +34,7 @@ defmodule Ecto.ULID do
   """
   def cast!(value) do
     case cast(value) do
-      {:ok, ulid} -> ulid
+      {:ok, ulid} -> String.downcase(ulid)
       :error -> raise Ecto.CastError, type: __MODULE__, value: value
     end
   end
@@ -42,18 +42,18 @@ defmodule Ecto.ULID do
   @doc """
   Converts a Crockford Base32 encoded ULID into a binary.
   """
-  def dump(<<_::bytes-size(26)>> = encoded), do: decode(encoded)
+  def dump(encoded) when is_binary(encoded) and byte_size(encoded) >= 26, do: decode(String.upcase(encoded))
 
   def dump(_), do: :error
 
-  def dump(data, params) when is_binary(data) and byte_size(data) >= 26 do
+  def dump(encoded, params) when is_binary(encoded) and byte_size(encoded) >= 26 do
     prefix = Map.get(params, :prefix)
     prefix_with_separator = prefix <> @prefix_separator
 
-    data
+    encoded
     |> String.split_at(String.length(prefix_with_separator))
     |> case do
-      {^prefix_with_separator, data} -> data |> String.upcase() |> decode()
+      {^prefix_with_separator, encoded} -> encoded |> String.upcase() |> decode()
       _ -> :error
     end
   end
@@ -63,7 +63,10 @@ defmodule Ecto.ULID do
   @doc """
   Converts a binary ULID into a Crockford Base32 encoded string.
   """
-  def load(<<_::unsigned-size(128)>> = bytes), do: encode(bytes)
+  def load(<<_::unsigned-size(128)>> = bytes) do
+    {:ok, ulid} = encode(bytes)
+    {:ok, String.downcase(ulid)}
+  end
 
   def load(_), do: :error
 
